@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Kiosk Browser</title>
+  <style>
+    body {
+      margin:0; padding:0;
+      display:flex; flex-direction:column; align-items:center; justify-content:center;
+      height:100vh; background:#1e1e1e; color:white; font-family:sans-serif;
+      position: relative;
+    }
+    h1 { font-size:48px; margin-bottom:40px; }
+    .buttons { display:flex; gap:20px; flex-wrap:wrap; margin-bottom:20px; }
+    button {
+      padding:20px 40px; font-size:24px; border:none; border-radius:10px;
+      background:#ff4d6a; color:white; cursor:pointer; transition: transform 0.2s;
+    }
+    button:hover { transform:scale(1.1); background:#ff667d; }
+
+    /* Smaller PDFs button */
+    #pdfBtn {
+      padding: 20px 40px;
+      font-size: 18px;
+      border-radius: 8px;
+      align-self: flex-start;
+    }
+
+    #exitBtn {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      width: 40px;
+      height: 40px;
+      padding:0;
+      font-size: 24px;
+      font-weight: bold;
+      line-height: 40px;
+      text-align: center;
+      border-radius: 50%;
+      background: #ff4d6a;
+      color: white;
+      border: none;
+      cursor: pointer;
+      opacity: 0.8;
+      transition: opacity 0.2s, transform 0.2s;
+    }
+    #exitBtn:hover { opacity:1; transform:scale(1.2); background:#ff667d; }
+
+    /* PDF list view, hidden initially */
+    #pdfContainer {
+      display: none;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 15px;
+      margin-top: 20px;
+      padding-left: 20px;
+    }
+
+    #backToMain {
+      display: none;
+      margin-bottom: 20px;
+      padding: 10px 30px;
+      font-size: 20px;
+      border-radius: 8px;
+      background: #555;
+      color:white;
+      border:none;
+      cursor:pointer;
+    }
+    #backToMain:hover { background:#777; }
+
+    #pdfContainer button {
+      padding: 20px 40px;
+      font-size: 18px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Kiosk Browser</h1>
+
+  <!-- Main Buttons -->
+  <div class="buttons" id="mainButtons">
+    <button onclick="openSite('https://leetcode.com')">LeetCode</button>
+    <button onclick="openSite('https://neetcode.io')">NeetCode</button>
+    <button onclick="openSite('https://www.youtube.com/results?search_query=sql+tutorial')">SQL YouTube</button>
+    <button onclick="openSite('https://www.youtube.com/results?search_query=dsa+tutorial')">DSA YouTube</button>
+    <button id="pdfBtn" onclick="showPDFs()">PDFs</button>
+  </div>
+
+  <!-- Back button to main buttons -->
+  <button id="backToMain" onclick="showMainButtons()">← Back</button>
+
+  <!-- PDF Container (vertical view) -->
+  <div id="pdfContainer"></div>
+
+  <!-- Exit Button -->
+  <button id="exitBtn" onclick="exitApp()">✕</button>
+
+  <script>
+    const mainButtons = document.getElementById('mainButtons');
+    const pdfContainer = document.getElementById('pdfContainer');
+    const backBtn = document.getElementById('backToMain');
+
+    function openSite(url) { window.electronAPI.openSite(url); }
+    function exitApp() { window.electronAPI.exitApp(); }
+
+    function showPDFs() {
+      mainButtons.style.display = 'none';
+      backBtn.style.display = 'block';
+      pdfContainer.style.display = 'flex';
+    }
+
+    function showMainButtons() {
+      mainButtons.style.display = 'flex';
+      backBtn.style.display = 'none';
+      pdfContainer.style.display = 'none';
+    }
+
+    function openPDF(file, page=1) { window.electronAPI.openPDF(file, page); }
+
+    // Populate PDF list
+    window.electronAPI.onPDFList(list => {
+      pdfContainer.innerHTML = '';
+      list.forEach(file => {
+        const btn = document.createElement('button');
+        btn.innerText = file;
+        btn.onclick = () => openPDF(file);
+        pdfContainer.appendChild(btn);
+      });
+    });
+  </script>
+</body>
+</html>
