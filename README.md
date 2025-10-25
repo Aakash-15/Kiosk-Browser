@@ -19,7 +19,7 @@ Copy and paste the following commands in your terminal 👇
 
 ```bash
 # Clone the repository
-git clone https://github.com/<your-username>/KioskApp.git
+git clone https://github.com/Aakash-15/KioskApp.git
 cd KioskApp
 
 # Install dependencies
